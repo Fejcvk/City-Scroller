@@ -17,21 +17,21 @@ class ViewController: UIViewController {
     
     override func loadView() {
         self.view = InfiniteScrollView.init()
+        self.moonView = createMoon()
+        view.addSubview(moonView!)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
-        self.moonView = createMoon()
-        view.addSubview(moonView!)
         scrollView.delegate = self
+
     }
 
     private func createMoon() -> UIView {
         let side = 100
         let size = CGSize(width: side, height: side)
         let circle = UIView(frame: CGRect(origin: .zero, size: size))
-        circle.backgroundColor = .gray
+        circle.backgroundColor = .white
         circle.layer.cornerRadius = CGFloat(side) * 0.5
         
         let moveGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
@@ -55,7 +55,7 @@ class ViewController: UIViewController {
             let circleCenter = movedCircle.center
             let grabOffset = CGVector(dx: grabPoint.x - circleCenter.x, dy: grabPoint.y - circleCenter.y)
             self.grabOffsetVector = grabOffset
-            self.view.bringSubviewToFront(movedCircle)
+            self.view.sendSubviewToBack(movedCircle)
             UIView.animate(withDuration: 0.2) {
                 movedCircle.alpha = 0.5
                 movedCircle.transform = .init(scaleX: 1.2, y: 1.2)
@@ -64,16 +64,12 @@ class ViewController: UIViewController {
             let grabOffset = self.grabOffsetVector
             let touchLocation = gesture.location(in: self.view)
             movedCircle.center = CGPoint(x: touchLocation.x - grabOffset.dx, y: touchLocation.y - grabOffset.dy)
+            originalOffset = abs(movedCircle.frame.origin.x - scrollView.bounds.maxX)
         case .ended, .cancelled:
             UIView.animate(withDuration: 0.2) {
                 movedCircle.alpha = 1
                 movedCircle.transform = .identity
             }
-            print("Max x = ",scrollView.bounds.maxX)
-            print("Bounds = ", scrollView.frame.size.width)
-            originalOffset = abs(movedCircle.frame.origin.x - scrollView.bounds.maxX)
-            print("origin = ", movedCircle.frame.origin.x)
-            print("Offset = ",originalOffset)
         default:
             break
         }
