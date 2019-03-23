@@ -116,15 +116,15 @@ class InfiniteScrollView: UIScrollView {
         
         contentSize = CGSize(width: size.width * 3, height: BuildingView.maxBuildingHeight)
         //royal blue
+        self.showsHorizontalScrollIndicator = false
         backgroundColor = UIColor(red:65.0/255, green:105.0/255, blue:225.0/255, alpha:1.0)
-        indicatorStyle = .white
         buildingContainerView.frame = CGRect(origin: .zero, size: contentSize)
     }
     
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         let superResult = super.hitTest(point, with: event)
         if moonView!.frame.contains(point){
-            return moonView!
+            return moonView
         }
         return superResult
     }
